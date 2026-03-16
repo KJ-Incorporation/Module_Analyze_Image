@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weighty Test UI</title>
+  <style>
+    :root {
+      --bg: #f4efe7;
+      --bg-accent: #efe4d1;
+      --surface: rgba(255, 251, 245, 0.86);
+      --surface-strong: #fffaf2;
+      --text: #1f1c19;
+      --muted: #645a52;
+      --border: rgba(89, 69, 51, 0.12);
+      --shadow: 0 24px 60px rgba(58, 40, 25, 0.12);
+      --primary: #1d6b5c;
+      --primary-strong: #145246;
+      --secondary: #d8a45d;
+      --success: #177245;
+      --error: #b03a2e;
+      --loading: #8b5e34;
+      --ready: #5b6470;
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.8), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(216, 164, 93, 0.18), transparent 26%),
+        linear-gradient(135deg, var(--bg) 0%, var(--bg-accent) 100%);
+      min-height: 100vh;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 32px auto 48px;
+      display: grid;
+      gap: 24px;
+    }
+
+    .hero,
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .hero {
+      padding: 28px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(29, 107, 92, 0.1);
+      color: var(--primary-strong);
+      font-size: 0.86rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      max-width: 12ch;
+      line-height: 0.95;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .hero-grid,
+    .content-grid {
+      display: grid;
+      gap: 24px;
+    }
+
+    .hero-grid {
+      grid-template-columns: 2fr 1fr;
+      align-items: end;
+    }
+
+    .hero-card {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid rgba(89, 69, 51, 0.08);
+    }
+
+    .content-grid {
+      grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    form {
+      display: grid;
+      gap: 18px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.94rem;
+      font-weight: 700;
+    }
+
+    input,
+    select,
+    button,
+    textarea {
+      font: inherit;
+    }
+
+    input,
+    select {
+      width: 100%;
+      border: 1px solid rgba(89, 69, 51, 0.16);
+      background: rgba(255, 255, 255, 0.78);
+      border-radius: 14px;
+      padding: 13px 14px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: rgba(29, 107, 92, 0.45);
+      box-shadow: 0 0 0 4px rgba(29, 107, 92, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .file-input {
+      padding: 10px;
+      min-height: 54px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .button {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .button.primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 12px 22px rgba(29, 107, 92, 0.22);
+    }
+
+    .button.secondary {
+      background: rgba(29, 107, 92, 0.08);
+      color: var(--primary-strong);
+    }
+
+    .button.ghost {
+      background: rgba(99, 90, 82, 0.08);
+      color: var(--text);
+    }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      background: rgba(91, 100, 112, 0.1);
+      color: var(--ready);
+    }
+
+    .status-badge::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: 0.9;
+    }
+
+    .status-ready {
+      color: var(--ready);
+      background: rgba(91, 100, 112, 0.1);
+    }
+
+    .status-loading {
+      color: var(--loading);
+      background: rgba(139, 94, 52, 0.12);
+    }
+
+    .status-success {
+      color: var(--success);
+      background: rgba(23, 114, 69, 0.12);
+    }
+
+    .status-error {
+      color: var(--error);
+      background: rgba(176, 58, 46, 0.12);
+    }
+
+    .summary-grid,
+    .result-grid,
+    .notes-grid,
+    .preview-grid,
+    .region-summary-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .summary-grid,
+    .notes-grid {
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    }
+
+    .preview-grid,
+    .region-summary-grid {
+      grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+    }
+
+    .preview-grid {
+      margin-top: 8px;
+    }
+
+    .preview-card,
+    .metric-card,
+    .note-card,
+    .image-result,
+    .response-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.65);
+    }
+
+    .preview-card {
+      overflow: hidden;
+    }
+
+    .preview-card img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      display: block;
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    .preview-card .caption,
+    .image-result .content,
+    .metric-card,
+    .note-card,
+    .response-card {
+      padding: 14px;
+    }
+
+    .metric-card {
+      display: grid;
+      gap: 6px;
+      min-height: 110px;
+    }
+
+    .metric-card .label,
+    .note-card .label {
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+    }
+
+    .metric-card .value {
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .mono {
+      font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+    }
+
+    .response-card pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.55;
+      font-size: 0.92rem;
+    }
+
+    .result-grid {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .image-result header {
+      padding: 14px 14px 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(29, 107, 92, 0.1);
+      color: var(--primary-strong);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .warning-list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      display: grid;
+      gap: 6px;
+    }
+
+    .region-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .region-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .region-item.visible {
+      border-color: rgba(23, 114, 69, 0.18);
+      background: rgba(23, 114, 69, 0.08);
+    }
+
+    .region-item.missing {
+      border-color: rgba(176, 58, 46, 0.14);
+      background: rgba(176, 58, 46, 0.06);
+    }
+
+    .region-check {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.92rem;
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+
+    .region-item.visible .region-check {
+      background: rgba(23, 114, 69, 0.14);
+      color: var(--success);
+    }
+
+    .region-item.missing .region-check {
+      background: rgba(176, 58, 46, 0.12);
+      color: var(--error);
+    }
+
+    .region-meta {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .region-meta strong {
+      font-size: 0.92rem;
+    }
+
+    .region-meta span {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .empty-state {
+      padding: 18px;
+      border: 1px dashed rgba(89, 69, 51, 0.18);
+      border-radius: 18px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.38);
+    }
+
+    @media (max-width: 920px) {
+      .hero-grid,
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 20px, 1180px);
+        margin: 20px auto 28px;
+      }
+
+      .hero,
+      .panel {
+        padding: 18px;
+      }
+
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .actions,
+      .status-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <span class="eyebrow">Weighty FastAPI Test UI</span>
+      <div class="hero-grid">
+        <div>
+          <h1>Tester le backend body fat directement depuis FastAPI.</h1>
+          <p>
+            Cette page envoie des images et des metadonnees utilisateur en
+            <span class="mono">multipart/form-data</span> vers un endpoint relatif du backend.
+          </p>
+        </div>
+        <div class="hero-card">
+          <strong>Endpoint cote front</strong>
+          <p class="mono" id="endpointLabel">/analyze</p>
+          <p>Le chemin est defini en JavaScript et peut etre change facilement vers <span class="mono">/analyze-bodyfat</span>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <section class="panel">
+        <h2>Formulaire</h2>
+        <p>Les champs vides ne sont pas envoyes. Les images sont ajoutees via <span class="mono">FormData</span>.</p>
+
+        <form id="analyzeForm">
+          <div class="field-grid">
+            <div class="field full">
+              <label for="images">Images</label>
+              <input class="file-input" id="images" name="images" type="file" accept="image/*" multiple />
+            </div>
+
+            <div class="field full">
+              <div id="previewGrid" class="preview-grid"></div>
+            </div>
+
+            <div class="field">
+              <label for="user_id">user_id</label>
+              <input id="user_id" name="user_id" type="text" placeholder="user_12345" />
+            </div>
+
+            <div class="field">
+              <label for="age">age</label>
+              <input id="age" name="age" type="number" min="0" step="1" placeholder="31" />
+            </div>
+
+            <div class="field">
+              <label for="sexFieldMode">Champ sexe a envoyer</label>
+              <select id="sexFieldMode" name="sexFieldMode">
+                <option value="sex">Envoyer sex</option>
+                <option value="gender">Envoyer gender</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="sexValue">Valeur sexe / gender</label>
+              <select id="sexValue" name="sexValue">
+                <option value="">Non renseigne</option>
+                <option value="female">female</option>
+                <option value="male">male</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="height_cm">height_cm</label>
+              <input id="height_cm" name="height_cm" type="number" min="0" step="0.1" placeholder="168" />
+            </div>
+
+            <div class="field">
+              <label for="weight_kg">weight_kg</label>
+              <input id="weight_kg" name="weight_kg" type="number" min="0" step="0.1" placeholder="63.5" />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="button primary" id="submitButton" type="submit">Envoyer</button>
+            <button class="button secondary" id="resetButton" type="button">Reset</button>
+            <button class="button ghost" id="copyButton" type="button">Copier la reponse JSON</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="status-row">
+          <div id="statusBadge" class="status-badge status-ready">Pret</div>
+          <div class="muted mono" id="statusDetail">En attente d'une requete.</div>
+        </div>
+
+        <section>
+          <h2>Resume</h2>
+          <div id="summaryGrid" class="summary-grid">
+            <div class="empty-state">Aucune reponse pour le moment.</div>
+          </div>
+        </section>
+
+        <section style="margin-top: 24px;">
+          <h2>Zones prises en compte</h2>
+          <p>Bloc prioritaire pour le front. Une zone faible peut etre coloree en rouge si sa confidence reste sous 0.55.</p>
+          <div id="regionSummaryGrid" class="region-summary-grid">
+            <div class="empty-state">Le recap global des zones analyseees s'affichera ici.</div>
+          </div>
+        </section>
+
+        <section style="margin-top: 24px;">
+          <h2>Debug par image</h2>
+          <div id="resultsByImage" class="result-grid">
+            <div class="empty-state">Les resultats par image s'afficheront ici.</div>
+          </div>
+        </section>
+
+        <section style="margin-top: 24px;">
+          <h2>Reponse JSON</h2>
+          <div class="response-card">
+            <pre id="jsonOutput">{"status":"ready"}</pre>
+          </div>
+        </section>
+
+        <section style="margin-top: 24px;">
+          <h2>Notes</h2>
+          <div class="notes-grid">
+            <article class="note-card">
+              <div class="label">Service prevu</div>
+              <p>Cette page est prevue pour etre servie directement par votre backend FastAPI via <span class="mono">GET /test-ui</span>.</p>
+            </article>
+            <article class="note-card">
+              <div class="label">Format attendu</div>
+              <p>L'endpoint appele doit accepter des requetes <span class="mono">multipart/form-data</span>.</p>
+            </article>
+            <article class="note-card">
+              <div class="label">Modification rapide</div>
+              <p>Pour tester un autre endpoint, modifiez la constante JavaScript <span class="mono">ANALYZE_ENDPOINT</span>.</p>
+            </article>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    // Change this relative endpoint if the backend route evolves.
+    const ANALYZE_ENDPOINT = "/analyze";
+
+    const form = document.getElementById("analyzeForm");
+    const imagesInput = document.getElementById("images");
+    const previewGrid = document.getElementById("previewGrid");
+    const jsonOutput = document.getElementById("jsonOutput");
+    const summaryGrid = document.getElementById("summaryGrid");
+    const regionSummaryGrid = document.getElementById("regionSummaryGrid");
+    const resultsByImage = document.getElementById("resultsByImage");
+    const copyButton = document.getElementById("copyButton");
+    const resetButton = document.getElementById("resetButton");
+    const submitButton = document.getElementById("submitButton");
+    const statusBadge = document.getElementById("statusBadge");
+    const statusDetail = document.getElementById("statusDetail");
+    const endpointLabel = document.getElementById("endpointLabel");
+
+    endpointLabel.textContent = ANALYZE_ENDPOINT;
+
+    function setStatus(type, label, detail) {
+      statusBadge.className = `status-badge status-${type}`;
+      statusBadge.textContent = label;
+      statusDetail.textContent = detail;
+    }
+
+    function formatValue(value, suffix = "") {
+      if (value === null || value === undefined || value === "") {
+        return "null";
+      }
+      if (typeof value === "number") {
+        return `${value}${suffix}`;
+      }
+      return `${value}${suffix}`;
+    }
+
+    function createMetricCard(label, value, helper = "") {
+      return `
+        <article class="metric-card">
+          <div class="label">${escapeHtml(label)}</div>
+          <div class="value">${escapeHtml(formatValue(value))}</div>
+          <div class="muted">${escapeHtml(helper)}</div>
+        </article>
+      `;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function renderPreviews(files) {
+      previewGrid.innerHTML = "";
+      if (!files.length) {
+        previewGrid.innerHTML = '<div class="empty-state">Ajoutez une ou plusieurs images pour voir un apercu.</div>';
+        return;
+      }
+
+      files.forEach((file) => {
+        const url = URL.createObjectURL(file);
+        const card = document.createElement("article");
+        card.className = "preview-card";
+        card.innerHTML = `
+          <img src="${url}" alt="${escapeHtml(file.name)}" />
+          <div class="caption">
+            <strong>${escapeHtml(file.name)}</strong>
+            <div class="muted">${Math.round(file.size / 1024)} KB</div>
+          </div>
+        `;
+        card.querySelector("img").addEventListener("load", () => {
+          URL.revokeObjectURL(url);
+        });
+        previewGrid.appendChild(card);
+      });
+    }
+
+    function renderSummary(data) {
+      if (!data || typeof data !== "object") {
+        summaryGrid.innerHTML = '<div class="empty-state">Reponse non exploitable pour le resume.</div>';
+        return;
+      }
+
+      const warnings = Array.isArray(data.warnings) ? data.warnings : [];
+      const cards = [
+        createMetricCard("BMI", data.bmi, "Calcule uniquement depuis taille + poids."),
+        createMetricCard("Body Fat %", data.estimated_body_fat_percent, "Estimation uniquement."),
+        createMetricCard("Fat Mass kg", data.estimated_fat_mass_kg, "Derive du poids si disponible."),
+        createMetricCard("Lean Mass kg", data.estimated_lean_mass_kg, "Estimation non medicale."),
+        createMetricCard("Confidence", data.confidence_score, "0 a 1"),
+        createMetricCard("Model Version", data.model_version || "null", "Version de l'estimateur."),
+      ];
+
+      const warningCard = `
+        <article class="metric-card">
+          <div class="label">Warnings</div>
+          <div class="muted">${warnings.length ? `${warnings.length} avertissement(s)` : "Aucun avertissement."}</div>
+          ${warnings.length
+            ? `<ul class="warning-list">${warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join("")}</ul>`
+            : '<div class="value">OK</div>'}
+        </article>
+      `;
+
+      const feedbackCard = `
+        <article class="metric-card">
+          <div class="label">Analysis Feedback</div>
+          <div class="muted">${escapeHtml(data.analysis_feedback || "Aucun feedback d'analyse.")}</div>
+        </article>
+      `;
+
+      const coachingCard = `
+        <article class="metric-card">
+          <div class="label">Coaching Feedback</div>
+          <div class="muted">${escapeHtml(data.coaching_feedback || "Aucun feedback coaching.")}</div>
+        </article>
+      `;
+
+      summaryGrid.innerHTML = `${cards.join("")}${feedbackCard}${coachingCard}${warningCard}`;
+    }
+
+    function renderAggregatedRegions(data) {
+      const regions = Array.isArray(data?.analyzed_regions_summary) ? data.analyzed_regions_summary : [];
+
+      if (!regions.length) {
+        regionSummaryGrid.innerHTML = '<div class="empty-state">Aucun recap global des zones n\'a ete retourne.</div>';
+        return;
+      }
+
+      regionSummaryGrid.innerHTML = regions.map((region) => {
+        const takenIntoAccount = Boolean(region.taken_into_account);
+        return `
+          <div class="region-item ${takenIntoAccount ? "visible" : "missing"}">
+            <div class="region-check">${takenIntoAccount ? "OK" : "--"}</div>
+            <div class="region-meta">
+              <strong>${escapeHtml(region.label || region.key || "zone")}</strong>
+              <span>confidence: ${escapeHtml(formatValue(region.confidence))}</span>
+              <span>${takenIntoAccount ? "prise en compte" : "zone trop faible pour le front"}</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderImageResults(data) {
+      const results = Array.isArray(data?.results) ? data.results : [];
+
+      if (!results.length) {
+        resultsByImage.innerHTML = '<div class="empty-state">Aucun resultat par image retourne.</div>';
+        return;
+      }
+
+      resultsByImage.innerHTML = results.map((result, index) => {
+        const warnings = Array.isArray(result.warnings) ? result.warnings : [];
+        const analyzedRegions = Array.isArray(result.analyzed_regions) ? result.analyzed_regions : [];
+        const posture = result.posture_summary ?? "null";
+        const filename = result.filename || `image_${index + 1}`;
+        const regionMarkup = analyzedRegions.length
+          ? `
+              <div class="region-grid">
+                ${analyzedRegions.map((region) => `
+                  <div class="region-item ${region.visible ? "visible" : "missing"}">
+                    <div class="region-check">${region.visible ? "OK" : "--"}</div>
+                    <div class="region-meta">
+                      <strong>${escapeHtml(region.label || region.key || "zone")}</strong>
+                      <span>confidence: ${escapeHtml(formatValue(region.confidence))}</span>
+                      <span>${region.taken_into_account ? "prise en compte" : "faible pour le front"}</span>
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
+            `
+          : '<p class="muted">Aucune checklist de zones analysee pour cette image.</p>';
+        return `
+          <article class="image-result">
+            <header>
+              <div>
+                <h3>${escapeHtml(filename)}</h3>
+                <p class="muted">${escapeHtml(result.processing_status || "unknown")}</p>
+              </div>
+              <span class="pill">${result.body_detected ? "body detected" : "no body"}</span>
+            </header>
+            <div class="content">
+              <p><strong>Confidence:</strong> ${escapeHtml(formatValue(result.confidence_score))}</p>
+              <p><strong>Quality:</strong> ${escapeHtml(formatValue(result.quality_score))}</p>
+              <p><strong>Usable for body fat:</strong> ${escapeHtml(String(Boolean(result.usable_for_body_fat_estimation)))}</p>
+              <p><strong>Shoulder px:</strong> ${escapeHtml(formatValue(result.estimated_shoulder_width_px))}</p>
+              <p><strong>Hip px:</strong> ${escapeHtml(formatValue(result.estimated_hip_width_px))}</p>
+              <p><strong>Waist px:</strong> ${escapeHtml(formatValue(result.estimated_waist_width_px))}</p>
+              <p><strong>Waist/Hip:</strong> ${escapeHtml(formatValue(result.estimated_waist_to_hip_ratio))}</p>
+              <p><strong>Posture:</strong> ${escapeHtml(posture)}</p>
+              <p><strong>Image size:</strong> ${escapeHtml(formatValue(result.image_width))} x ${escapeHtml(formatValue(result.image_height))}</p>
+              <p><strong>Recap analyse:</strong></p>
+              ${regionMarkup}
+              ${warnings.length
+                ? `<ul class="warning-list">${warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join("")}</ul>`
+                : '<p class="muted">Aucun warning pour cette image.</p>'}
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function buildFormData() {
+      const formData = new FormData();
+      const files = Array.from(imagesInput.files || []);
+      const userId = document.getElementById("user_id").value.trim();
+      const age = document.getElementById("age").value.trim();
+      const sexFieldMode = document.getElementById("sexFieldMode").value;
+      const sexValue = document.getElementById("sexValue").value.trim();
+      const heightCm = document.getElementById("height_cm").value.trim();
+      const weightKg = document.getElementById("weight_kg").value.trim();
+
+      files.forEach((file) => formData.append("images", file));
+
+      if (userId) formData.append("user_id", userId);
+      if (age) formData.append("age", age);
+      if (sexValue) formData.append(sexFieldMode, sexValue);
+      if (heightCm) formData.append("height_cm", heightCm);
+      if (weightKg) formData.append("weight_kg", weightKg);
+
+      return formData;
+    }
+
+    async function copyJsonOutput() {
+      const content = jsonOutput.textContent.trim();
+      if (!content) {
+        setStatus("error", "Erreur", "Aucune reponse JSON a copier.");
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(content);
+        setStatus("success", "Succes", "Reponse JSON copiee dans le presse-papiers.");
+      } catch (error) {
+        setStatus("error", "Erreur", "Impossible de copier la reponse JSON.");
+      }
+    }
+
+    function resetUi() {
+      form.reset();
+      previewGrid.innerHTML = '<div class="empty-state">Ajoutez une ou plusieurs images pour voir un apercu.</div>';
+      summaryGrid.innerHTML = '<div class="empty-state">Aucune reponse pour le moment.</div>';
+      regionSummaryGrid.innerHTML = '<div class="empty-state">Le recap global des zones analyseees s\'affichera ici.</div>';
+      resultsByImage.innerHTML = '<div class="empty-state">Les resultats par image s\'afficheront ici.</div>';
+      jsonOutput.textContent = '{"status":"ready"}';
+      setStatus("ready", "Pret", "En attente d'une requete.");
+    }
+
+    imagesInput.addEventListener("change", (event) => {
+      renderPreviews(Array.from(event.target.files || []));
+    });
+
+    copyButton.addEventListener("click", copyJsonOutput);
+    resetButton.addEventListener("click", resetUi);
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const files = Array.from(imagesInput.files || []);
+      if (!files.length) {
+        setStatus("error", "Erreur", "Ajoutez au moins une image avant l'envoi.");
+        return;
+      }
+
+      submitButton.disabled = true;
+      copyButton.disabled = true;
+      setStatus("loading", "Chargement", "Envoi de la requete au backend...");
+
+      try {
+        const response = await fetch(ANALYZE_ENDPOINT, {
+          method: "POST",
+          body: buildFormData(),
+        });
+
+        const rawText = await response.text();
+        let data;
+
+        try {
+          data = JSON.parse(rawText);
+        } catch (error) {
+          data = { raw_response: rawText };
+        }
+
+        jsonOutput.textContent = JSON.stringify(data, null, 2);
+        renderSummary(data);
+        renderAggregatedRegions(data);
+        renderImageResults(data);
+
+        if (response.ok) {
+          setStatus("success", "Succes", `Reponse recue avec le statut HTTP ${response.status}.`);
+        } else {
+          setStatus("error", "Erreur", `Le backend a repondu avec le statut HTTP ${response.status}.`);
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Erreur reseau inconnue.";
+        const payload = { error: message };
+        jsonOutput.textContent = JSON.stringify(payload, null, 2);
+        renderSummary(payload);
+        renderAggregatedRegions(payload);
+        renderImageResults(payload);
+        setStatus("error", "Erreur", "La requete a echoue avant de recevoir une reponse.");
+      } finally {
+        submitButton.disabled = false;
+        copyButton.disabled = false;
+      }
+    });
+
+    resetUi();
+  </script>
+</body>
+</html>

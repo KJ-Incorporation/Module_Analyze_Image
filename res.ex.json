@@ -1,0 +1,487 @@
+{
+  "user_id": "user_1",
+  "sex": "male",
+  "age": 25,
+  "height_cm": 173,
+  "weight_kg": 75,
+  "images_processed": 1,
+  "bmi": 25.06,
+  "estimated_body_fat_percent": 15.4,
+  "estimated_fat_mass_kg": 11.55,
+  "estimated_lean_mass_kg": 63.45,
+  "confidence_score": 0.762,
+  "model_version": "heuristic-bodyfat-v0.3.0",
+  "estimated_body_fat_note": "Image-based body fat is an estimate only and must not be treated as a medical measurement.",
+  "analysis_feedback": "Good analysis base. Image quality looks solid overall. Reliable zones: Tete, Biceps / triceps gauche, Biceps / triceps droit, and Avant-bras gauche. The body fat estimate should still be treated as directional only.",
+  "coaching_feedback": "Good overall composition. Mild abdominal fat retention is still likely. At an illustrative pace of about 0.5 kg per week, you could approach 15% estimated body fat around March 2026.",
+  "overall_quality_score": 1,
+  "warnings": [
+    "Estimated body fat is derived from demographics and image-based proxies, not direct measurement."
+  ],
+  "recommendations": [],
+  "analyzed_regions_summary": [
+    {
+      "key": "head",
+      "label": "Tete",
+      "visible": true,
+      "confidence": 1,
+      "taken_into_account": true
+    },
+    {
+      "key": "left_upper_arm",
+      "label": "Biceps / triceps gauche",
+      "visible": true,
+      "confidence": 0.906,
+      "taken_into_account": true
+    },
+    {
+      "key": "right_upper_arm",
+      "label": "Biceps / triceps droit",
+      "visible": true,
+      "confidence": 0.998,
+      "taken_into_account": true
+    },
+    {
+      "key": "left_forearm",
+      "label": "Avant-bras gauche",
+      "visible": true,
+      "confidence": 0.683,
+      "taken_into_account": true
+    },
+    {
+      "key": "right_forearm",
+      "label": "Avant-bras droit",
+      "visible": true,
+      "confidence": 0.986,
+      "taken_into_account": true
+    },
+    {
+      "key": "torso",
+      "label": "Torse",
+      "visible": true,
+      "confidence": 1,
+      "taken_into_account": true
+    },
+    {
+      "key": "waist",
+      "label": "Taille",
+      "visible": true,
+      "confidence": 1,
+      "taken_into_account": true
+    },
+    {
+      "key": "hips",
+      "label": "Hanches",
+      "visible": true,
+      "confidence": 1,
+      "taken_into_account": true
+    },
+    {
+      "key": "left_thigh",
+      "label": "Cuisse gauche",
+      "visible": true,
+      "confidence": 0.726,
+      "taken_into_account": true
+    },
+    {
+      "key": "right_thigh",
+      "label": "Cuisse droite",
+      "visible": true,
+      "confidence": 0.943,
+      "taken_into_account": true
+    },
+    {
+      "key": "left_lower_leg",
+      "label": "Mollet / jambe gauche",
+      "visible": true,
+      "confidence": 0.761,
+      "taken_into_account": true
+    },
+    {
+      "key": "right_lower_leg",
+      "label": "Mollet / jambe droite",
+      "visible": true,
+      "confidence": 0.915,
+      "taken_into_account": true
+    }
+  ],
+  "results": [
+    {
+      "filename": "Screenshot_20260308-031747.png",
+      "content_type": "image/png",
+      "processing_status": "success",
+      "body_detected": true,
+      "confidence_score": 0.942,
+      "quality_score": 1,
+      "usable_for_body_fat_estimation": true,
+      "image_width": 1080,
+      "image_height": 2424,
+      "bbox": {
+        "x_min": 421,
+        "y_min": 718,
+        "x_max": 652,
+        "y_max": 1797,
+        "width": 231,
+        "height": 1079
+      },
+      "landmarks": [
+        {
+          "index": 0,
+          "name": "nose",
+          "x_px": 588.89,
+          "y_px": 743.37,
+          "visibility": 0.9999,
+          "presence": 1
+        },
+        {
+          "index": 1,
+          "name": "left_eye_inner",
+          "x_px": 591.16,
+          "y_px": 720.09,
+          "visibility": 0.9999,
+          "presence": 0.9999
+        },
+        {
+          "index": 2,
+          "name": "left_eye",
+          "x_px": 595.04,
+          "y_px": 721.22,
+          "visibility": 0.9999,
+          "presence": 0.9999
+        },
+        {
+          "index": 3,
+          "name": "left_eye_outer",
+          "x_px": 598.72,
+          "y_px": 722.75,
+          "visibility": 0.9999,
+          "presence": 0.9999
+        },
+        {
+          "index": 4,
+          "name": "right_eye_inner",
+          "x_px": 575.54,
+          "y_px": 718.77,
+          "visibility": 0.9999,
+          "presence": 0.9999
+        },
+        {
+          "index": 5,
+          "name": "right_eye",
+          "x_px": 567.44,
+          "y_px": 718.75,
+          "visibility": 0.9999,
+          "presence": 0.9999
+        },
+        {
+          "index": 6,
+          "name": "right_eye_outer",
+          "x_px": 556.88,
+          "y_px": 718.93,
+          "visibility": 0.9999,
+          "presence": 0.9999
+        },
+        {
+          "index": 7,
+          "name": "left_ear",
+          "x_px": 582.03,
+          "y_px": 738.11,
+          "visibility": 0.9997,
+          "presence": 0.9999
+        },
+        {
+          "index": 8,
+          "name": "right_ear",
+          "x_px": 519.63,
+          "y_px": 732.71,
+          "visibility": 0.9999,
+          "presence": 0.9999
+        },
+        {
+          "index": 9,
+          "name": "mouth_left",
+          "x_px": 590.53,
+          "y_px": 769.27,
+          "visibility": 0.9999,
+          "presence": 0.9999
+        },
+        {
+          "index": 10,
+          "name": "mouth_right",
+          "x_px": 569.08,
+          "y_px": 767.03,
+          "visibility": 0.9999,
+          "presence": 1
+        },
+        {
+          "index": 11,
+          "name": "left_shoulder",
+          "x_px": 612.75,
+          "y_px": 889.93,
+          "visibility": 0.9998,
+          "presence": 0.9997
+        },
+        {
+          "index": 12,
+          "name": "right_shoulder",
+          "x_px": 442.01,
+          "y_px": 864.61,
+          "visibility": 0.9999,
+          "presence": 0.9999
+        },
+        {
+          "index": 13,
+          "name": "left_elbow",
+          "x_px": 644.47,
+          "y_px": 1033.82,
+          "visibility": 0.4657,
+          "presence": 0.9993
+        },
+        {
+          "index": 14,
+          "name": "right_elbow",
+          "x_px": 421.77,
+          "y_px": 1029.67,
+          "visibility": 0.9889,
+          "presence": 0.9994
+        },
+        {
+          "index": 15,
+          "name": "left_wrist",
+          "x_px": 641.73,
+          "y_px": 1108.56,
+          "visibility": 0.6428,
+          "presence": 0.9994
+        },
+        {
+          "index": 16,
+          "name": "right_wrist",
+          "x_px": 579.98,
+          "y_px": 1112.97,
+          "visibility": 0.9601,
+          "presence": 0.9996
+        },
+        {
+          "index": 17,
+          "name": "left_pinky",
+          "x_px": 652.69,
+          "y_px": 1147.79,
+          "visibility": 0.6397,
+          "presence": 0.9991
+        },
+        {
+          "index": 18,
+          "name": "right_pinky",
+          "x_px": 616.49,
+          "y_px": 1144.43,
+          "visibility": 0.9356,
+          "presence": 0.9994
+        },
+        {
+          "index": 19,
+          "name": "left_index",
+          "x_px": 649.69,
+          "y_px": 1123.8,
+          "visibility": 0.6396,
+          "presence": 0.9992
+        },
+        {
+          "index": 20,
+          "name": "right_index",
+          "x_px": 628.59,
+          "y_px": 1123.54,
+          "visibility": 0.934,
+          "presence": 0.9995
+        },
+        {
+          "index": 21,
+          "name": "left_thumb",
+          "x_px": 636.38,
+          "y_px": 1112.84,
+          "visibility": 0.6425,
+          "presence": 0.9994
+        },
+        {
+          "index": 22,
+          "name": "right_thumb",
+          "x_px": 618.69,
+          "y_px": 1110.91,
+          "visibility": 0.9283,
+          "presence": 0.9996
+        },
+        {
+          "index": 23,
+          "name": "left_hip",
+          "x_px": 584.36,
+          "y_px": 1209.33,
+          "visibility": 0.9999,
+          "presence": 0.9999
+        },
+        {
+          "index": 24,
+          "name": "right_hip",
+          "x_px": 491.38,
+          "y_px": 1206.34,
+          "visibility": 0.9999,
+          "presence": 0.9999
+        },
+        {
+          "index": 25,
+          "name": "left_knee",
+          "x_px": 570.57,
+          "y_px": 1458.27,
+          "visibility": 0.6781,
+          "presence": 0.9992
+        },
+        {
+          "index": 26,
+          "name": "right_knee",
+          "x_px": 499.38,
+          "y_px": 1470.4,
+          "visibility": 0.9333,
+          "presence": 0.9993
+        },
+        {
+          "index": 27,
+          "name": "left_ankle",
+          "x_px": 541.78,
+          "y_px": 1676.85,
+          "visibility": 0.7757,
+          "presence": 0.9943
+        },
+        {
+          "index": 28,
+          "name": "right_ankle",
+          "x_px": 501.51,
+          "y_px": 1711.13,
+          "visibility": 0.9115,
+          "presence": 0.9884
+        },
+        {
+          "index": 29,
+          "name": "left_heel",
+          "x_px": 539.13,
+          "y_px": 1705.39,
+          "visibility": 0.7281,
+          "presence": 0.9884
+        },
+        {
+          "index": 30,
+          "name": "right_heel",
+          "x_px": 485.46,
+          "y_px": 1737.08,
+          "visibility": 0.7819,
+          "presence": 0.9799
+        },
+        {
+          "index": 31,
+          "name": "left_foot_index",
+          "x_px": 612.96,
+          "y_px": 1753.26,
+          "visibility": 0.8297,
+          "presence": 0.9741
+        },
+        {
+          "index": 32,
+          "name": "right_foot_index",
+          "x_px": 561.11,
+          "y_px": 1797.98,
+          "visibility": 0.8995,
+          "presence": 0.9469
+        }
+      ],
+      "analyzed_regions": [
+        {
+          "key": "head",
+          "label": "Tete",
+          "visible": true,
+          "confidence": 1,
+          "taken_into_account": true
+        },
+        {
+          "key": "left_upper_arm",
+          "label": "Biceps / triceps gauche",
+          "visible": true,
+          "confidence": 0.906,
+          "taken_into_account": true
+        },
+        {
+          "key": "right_upper_arm",
+          "label": "Biceps / triceps droit",
+          "visible": true,
+          "confidence": 0.998,
+          "taken_into_account": true
+        },
+        {
+          "key": "left_forearm",
+          "label": "Avant-bras gauche",
+          "visible": true,
+          "confidence": 0.683,
+          "taken_into_account": true
+        },
+        {
+          "key": "right_forearm",
+          "label": "Avant-bras droit",
+          "visible": true,
+          "confidence": 0.986,
+          "taken_into_account": true
+        },
+        {
+          "key": "torso",
+          "label": "Torse",
+          "visible": true,
+          "confidence": 1,
+          "taken_into_account": true
+        },
+        {
+          "key": "waist",
+          "label": "Taille",
+          "visible": true,
+          "confidence": 1,
+          "taken_into_account": true
+        },
+        {
+          "key": "hips",
+          "label": "Hanches",
+          "visible": true,
+          "confidence": 1,
+          "taken_into_account": true
+        },
+        {
+          "key": "left_thigh",
+          "label": "Cuisse gauche",
+          "visible": true,
+          "confidence": 0.726,
+          "taken_into_account": true
+        },
+        {
+          "key": "right_thigh",
+          "label": "Cuisse droite",
+          "visible": true,
+          "confidence": 0.943,
+          "taken_into_account": true
+        },
+        {
+          "key": "left_lower_leg",
+          "label": "Mollet / jambe gauche",
+          "visible": true,
+          "confidence": 0.761,
+          "taken_into_account": true
+        },
+        {
+          "key": "right_lower_leg",
+          "label": "Mollet / jambe droite",
+          "visible": true,
+          "confidence": 0.915,
+          "taken_into_account": true
+        }
+      ],
+      "estimated_shoulder_width_px": 172.61,
+      "estimated_hip_width_px": 93.03,
+      "estimated_waist_width_px": 128.63,
+      "estimated_waist_to_hip_ratio": 1.383,
+      "posture_summary": "possible tilt / asymmetry",
+      "warnings": []
+    }
+  ]
+}

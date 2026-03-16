@@ -1,0 +1,1 @@
+"""Weighty vision module package."""
