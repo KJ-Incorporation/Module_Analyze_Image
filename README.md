@@ -1,4 +1,4 @@
-# Weighty Vision Module
+﻿# Weighty Vision Module
 
 Python FastAPI service for Weighty's computer vision MVP. The service receives one or more photos, validates and decodes them with OpenCV, detects body landmarks with MediaPipe Pose Landmarker, engineers visual proxy features, and returns a JSON response centered on body fat estimation.
 
@@ -226,21 +226,29 @@ Available URLs:
 
 ## Deploy on Render
 
-This repo includes a ready-to-use [render.yaml](/c:/Users/Utilisateur/Desktop/Code/Weighty-App/module/render.yaml).
+This repo now ships with a Docker-based Render setup so MediaPipe has the native Linux libraries it needs at runtime.
+
+Included files:
+
+- `render.yaml`
+- `Dockerfile`
+- `.dockerignore`
 
 Render setup summary:
 
-- Create a new Blueprint deployment from the repo
-- Render will use:
-  - `PYTHON_VERSION=3.11.11`
-  - build command from `render.yaml`
-  - start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-  - health check: `/health`
+- Push this repo to GitHub
+- In Render, create a new `Blueprint` deployment from the repo
+- Render will build the image from `Dockerfile`
+- The container installs the native libraries required by MediaPipe, including `libgles2`
+- The MediaPipe `.task` model is downloaded during the Docker build
+- The service starts with `uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000}`
+- Health check path: `/health`
 
 Important:
 
-- The MediaPipe `.task` model is not committed because `models/` is ignored.
-- `render.yaml` downloads the model automatically during the build.
+- This Docker setup is the recommended Render path for this project because the native Python runtime on Render can miss system libraries required by MediaPipe.
+- The model file is still not committed because `models/` is ignored.
+- `WEIGHTY_POSE_MODEL_PATH` is set automatically inside the container to `/opt/weighty/models/pose_landmarker_lite.task`.
 - After deployment, the main URLs are:
   - `/docs`
   - `/test-ui`
@@ -549,3 +557,4 @@ python -m pytest
 - If no image yields reliable torso features, `estimated_body_fat_percent` returns `null`.
 - Full body visibility and image sharpness materially affect the final confidence score.
 - The current estimator is a versioned heuristic placeholder until a trained model replaces it.
+

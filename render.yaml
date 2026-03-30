@@ -1,18 +1,12 @@
-services:
+﻿services:
   - type: web
     name: weighty-vision-module
-    runtime: python
+    runtime: docker
     plan: free
-    autoDeploy: true
-    buildCommand: >
-      pip install -r requirements.txt &&
-      mkdir -p models &&
-      curl -L https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task
-      -o models/pose_landmarker_lite.task
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    autoDeployTrigger: commit
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     healthCheckPath: /health
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.11
       - key: WEIGHTY_POSE_MODEL_PATH
-        value: models/pose_landmarker_lite.task
+        value: /opt/weighty/models/pose_landmarker_lite.task
