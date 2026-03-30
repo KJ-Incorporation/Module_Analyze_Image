@@ -35,6 +35,68 @@ class BodyRegionStatusResponse(BaseModel):
     taken_into_account: bool = False
 
 
+class AnalysisNotesResponse(BaseModel):
+    """One note block with a title and a message."""
+
+    title: str
+    message: str
+
+
+class AnalysisNotesBlockResponse(BaseModel):
+    """Frontend-friendly notes split into three product sections."""
+
+    attention: AnalysisNotesResponse
+    parfait: AnalysisNotesResponse
+    progression: AnalysisNotesResponse
+
+
+class AnalysisBlocksResponse(BaseModel):
+    """Expanded premium blocks for richer body-scan product screens."""
+
+    overview: AnalysisNotesResponse
+    truth: AnalysisNotesResponse
+    strength: AnalysisNotesResponse
+    limitation: AnalysisNotesResponse
+    next_focus: AnalysisNotesResponse
+    scan_quality: AnalysisNotesResponse
+
+
+class SomatotypeScoresResponse(BaseModel):
+    """Heuristic scores for the three classic somatotype buckets."""
+
+    ectomorph: float = Field(ge=0.0, le=1.0)
+    mesomorph: float = Field(ge=0.0, le=1.0)
+    endomorph: float = Field(ge=0.0, le=1.0)
+
+
+class SomatotypeResponse(BaseModel):
+    """Estimated somatotype summary returned to the frontend."""
+
+    primary: str | None = None
+    secondary: str | None = None
+    confidence: float | None = Field(default=None, ge=0.0, le=1.0)
+    scores: SomatotypeScoresResponse | None = None
+    notes: str
+
+
+class ScanProfileResponse(BaseModel):
+    """Premium scan profile derived from the body scan heuristics."""
+
+    reliability_level: str
+    confidence_label: str
+    confidence_message: str
+    definition_level: str
+    fat_distribution: str
+    frame_assessment: str
+    view_coverage: str
+    pose_quality: str
+    scan_readiness: str
+    best_next_focus: str
+    dominant_strength: str
+    dominant_limitation: str
+    summary: str
+
+
 class ImageAnalysisResponse(BaseModel):
     """Per-image analysis payload."""
 
@@ -76,6 +138,10 @@ class AnalyzeResponse(BaseModel):
     estimated_body_fat_note: str
     analysis_feedback: str
     coaching_feedback: str
+    analysis_notes: AnalysisNotesBlockResponse
+    analysis_blocks: AnalysisBlocksResponse
+    scan_profile: ScanProfileResponse
+    somatotype: SomatotypeResponse
     overall_quality_score: float | None = Field(default=None, ge=0.0, le=1.0)
     warnings: list[str] = Field(default_factory=list)
     recommendations: list[str] = Field(default_factory=list)
@@ -110,6 +176,83 @@ class AnalyzeResponse(BaseModel):
                     "At an illustrative pace of about 0.5 kg per week, you could approach 24% estimated body fat "
                     "around May 2026."
                 ),
+                "analysis_notes": {
+                    "attention": {
+                        "title": "Attention",
+                        "message": (
+                            "Le point a surveiller reste surtout la taille, qui parait encore un peu plus chargee "
+                            "que le reste de la silhouette."
+                        ),
+                    },
+                    "parfait": {
+                        "title": "Parfait",
+                        "message": (
+                            "Le scan est propre et la lecture du physique est deja assez coherente."
+                        ),
+                    },
+                    "progression": {
+                        "title": "Progression",
+                        "message": (
+                            "Si le rythme reste regulier autour de 0.5 kg par semaine, tu pourrais te rapprocher "
+                            "de 24% de body fat estime autour de mai 2026."
+                        ),
+                    },
+                },
+                "analysis_blocks": {
+                    "overview": {
+                        "title": "Lecture globale",
+                        "message": "Le scan est suffisamment propre pour une lecture exploitable. La structure generale parait equilibree, avec une marge qui reste surtout visible autour de la taille.",
+                    },
+                    "truth": {
+                        "title": "Le constat principal",
+                        "message": "Le scan indique surtout que la zone taille reste encore celle qui freine le plus un rendu plus sec.",
+                    },
+                    "strength": {
+                        "title": "Point fort du scan",
+                        "message": "Le scan est suffisamment clair pour soutenir un retour plus dur et plus utile.",
+                    },
+                    "limitation": {
+                        "title": "Frein principal",
+                        "message": "La retention autour de la taille reste ce qui freine le plus le rendu global.",
+                    },
+                    "next_focus": {
+                        "title": "Priorite physique",
+                        "message": "Le levier le plus rentable maintenant reste de continuer a faire descendre la zone qui garde encore le plus de gras residuel.",
+                    },
+                    "scan_quality": {
+                        "title": "Niveau de fiabilite",
+                        "message": "Le scan est classe high avec une couverture front_and_side_available et une posture neutral.",
+                    },
+                },
+                "scan_profile": {
+                    "reliability_level": "high",
+                    "confidence_label": "Tres fiable",
+                    "confidence_message": "Le scan est tres fiable: les angles sont bons, la posture est stable et la lecture globale tient bien.",
+                    "definition_level": "moderate_to_good",
+                    "fat_distribution": "slightly_central",
+                    "frame_assessment": "balanced_frame",
+                    "view_coverage": "front_and_side_available",
+                    "pose_quality": "neutral",
+                    "scan_readiness": "ready_for_actionable_feedback",
+                    "best_next_focus": "continue_improving_definition",
+                    "dominant_strength": "scan_clarity",
+                    "dominant_limitation": "central_fat",
+                    "summary": "Le scan est suffisamment propre pour une lecture exploitable. La structure parait deja correcte, avec une marge qui semble surtout se jouer sur la definition autour de la taille."
+                },
+                "somatotype": {
+                    "primary": "mesomorph",
+                    "secondary": "endomorph",
+                    "confidence": 0.72,
+                    "scores": {
+                        "ectomorph": 0.31,
+                        "mesomorph": 0.78,
+                        "endomorph": 0.44
+                    },
+                    "notes": (
+                        "Estime a partir des proportions visibles du corps et d'heuristiques liees au body fat uniquement. "
+                        "Il s'agit d'une etiquette approximative et non medicale."
+                    )
+                },
                 "overall_quality_score": 0.79,
                 "warnings": [
                     "Estimated body fat is derived from demographics and image-based proxies, not direct measurement."

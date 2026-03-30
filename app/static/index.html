@@ -719,8 +719,15 @@
         createMetricCard("Body Fat %", data.estimated_body_fat_percent, "Estimation uniquement."),
         createMetricCard("Fat Mass kg", data.estimated_fat_mass_kg, "Derive du poids si disponible."),
         createMetricCard("Lean Mass kg", data.estimated_lean_mass_kg, "Estimation non medicale."),
-        createMetricCard("Confidence", data.confidence_score, "0 a 1"),
+        createMetricCard("Fiabilite", data.scan_profile?.confidence_label || "null", data.scan_profile?.confidence_message || "Lecture humaine de la fiabilite du scan."),
         createMetricCard("Model Version", data.model_version || "null", "Version de l'estimateur."),
+        createMetricCard("Scan Reliability", data.scan_profile?.reliability_level || "null", "Niveau de fiabilite du scan."),
+        createMetricCard("Definition Level", data.scan_profile?.definition_level || "null", "Lecture premium de la definition visuelle."),
+        createMetricCard("Best Next Focus", data.scan_profile?.best_next_focus || "null", "Levier principal retenu par l'analyse."),
+        createMetricCard("Dominant Strength", data.scan_profile?.dominant_strength || "null", "Point fort principal retenu par le moteur."),
+        createMetricCard("Dominant Limitation", data.scan_profile?.dominant_limitation || "null", "Limite principale retenue par le moteur."),
+        createMetricCard("View Coverage", data.scan_profile?.view_coverage || "null", "Qualite des angles disponibles."),
+        createMetricCard("Pose Quality", data.scan_profile?.pose_quality || "null", "Neutralite du scan pour l'analyse."),
       ];
 
       const warningCard = `
@@ -733,21 +740,53 @@
         </article>
       `;
 
-      const feedbackCard = `
+      const attentionCard = `
+          <article class="metric-card">
+            <div class="label">${escapeHtml(data.analysis_notes?.attention?.title || "Attention")}</div>
+            <div class="muted">${escapeHtml(data.analysis_notes?.attention?.message || data.analysis_feedback || "Aucune note attention.")}</div>
+          </article>
+        `;
+
+        const perfectCard = `
+          <article class="metric-card">
+            <div class="label">${escapeHtml(data.analysis_notes?.parfait?.title || "Parfait")}</div>
+            <div class="muted">${escapeHtml(data.analysis_notes?.parfait?.message || data.analysis_feedback || "Aucune note parfait.")}</div>
+          </article>
+        `;
+
+        const progressionCard = `
+          <article class="metric-card">
+            <div class="label">${escapeHtml(data.analysis_notes?.progression?.title || "Progression")}</div>
+            <div class="muted">${escapeHtml(data.analysis_notes?.progression?.message || data.coaching_feedback || "Aucune note progression.")}</div>
+          </article>
+        `;
+
+      const somatotypeCard = `
         <article class="metric-card">
-          <div class="label">Analysis Feedback</div>
-          <div class="muted">${escapeHtml(data.analysis_feedback || "Aucun feedback d'analyse.")}</div>
+          <div class="label">Somatotype</div>
+          <div class="value">${escapeHtml(data.somatotype?.primary || "null")}</div>
+          <div class="muted">${escapeHtml(data.somatotype?.notes || "Aucune estimation morphologique.")}</div>
         </article>
       `;
 
-      const coachingCard = `
+      const scanProfileCard = `
         <article class="metric-card">
-          <div class="label">Coaching Feedback</div>
-          <div class="muted">${escapeHtml(data.coaching_feedback || "Aucun feedback coaching.")}</div>
+          <div class="label">Scan Profile</div>
+          <div class="value">${escapeHtml(data.scan_profile?.scan_readiness || "null")}</div>
+          <div class="muted">${escapeHtml(data.scan_profile?.summary || "Aucun profil de scan disponible.")}</div>
         </article>
       `;
 
-      summaryGrid.innerHTML = `${cards.join("")}${feedbackCard}${coachingCard}${warningCard}`;
+      const analysisBlocks = data.analysis_blocks && typeof data.analysis_blocks === "object"
+        ? Object.values(data.analysis_blocks).map((block) => `
+            <article class="metric-card">
+              <div class="label">${escapeHtml(block?.title || "Bloc premium")}</div>
+              <div class="muted">${escapeHtml(block?.message || "Aucun message disponible.")}</div>
+            </article>
+          `).join("")
+        : "";
+
+      summaryGrid.innerHTML = `${cards.join("")}${attentionCard}${perfectCard}${progressionCard}${somatotypeCard}${scanProfileCard}${analysisBlocks}${warningCard}`;
     }
 
     function renderAggregatedRegions(data) {

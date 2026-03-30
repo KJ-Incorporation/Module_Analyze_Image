@@ -1,6 +1,6 @@
-"""Unit tests for top-level body fat estimation."""
+"""Unit tests for top-level body fat and somatotype estimation."""
 
-from app.services.bodyfat_estimator import estimate_body_fat
+from app.services.bodyfat_estimator import estimate_body_fat, estimate_somatotype
 from app.services.feature_engineering import AggregatedVisualFeatures
 
 
@@ -161,3 +161,61 @@ def test_estimate_body_fat_reduces_confidence_when_body_coverage_is_partial() ->
     assert result.estimated_body_fat_percent is not None
     assert result.confidence_score is not None
     assert result.confidence_score < 0.7
+
+
+def test_estimate_somatotype_returns_mesomorphic_bias_for_athletic_male_profile() -> None:
+    visual_features = AggregatedVisualFeatures(
+        usable_image_count=2,
+        total_image_count=2,
+        aggregate_quality_score=0.86,
+        feature_richness_score=1.0,
+        feature_consistency_score=0.83,
+        body_coverage_score=0.92,
+        estimated_waist_to_hip_ratio=0.85,
+        estimated_shoulder_to_hip_ratio=1.22,
+        estimated_waist_to_bbox_height_ratio=0.18,
+        estimated_hip_to_bbox_height_ratio=0.22,
+        estimated_shoulder_to_bbox_height_ratio=0.26,
+        warnings=[],
+    )
+
+    somatotype = estimate_somatotype(
+        sex="male",
+        bmi=23.1,
+        visual_features=visual_features,
+        body_fat_percent=13.8,
+    )
+
+    assert somatotype.primary == "mesomorph"
+    assert somatotype.secondary in {"ectomorph", "endomorph"}
+    assert somatotype.confidence is not None
+    assert somatotype.mesomorph_score > somatotype.endomorph_score
+    assert somatotype.notes.startswith("Estime a partir")
+
+
+def test_estimate_somatotype_returns_unavailable_when_visual_support_is_missing() -> None:
+    visual_features = AggregatedVisualFeatures(
+        usable_image_count=0,
+        total_image_count=1,
+        aggregate_quality_score=None,
+        feature_richness_score=0.0,
+        feature_consistency_score=None,
+        body_coverage_score=None,
+        estimated_waist_to_hip_ratio=None,
+        estimated_shoulder_to_hip_ratio=None,
+        estimated_waist_to_bbox_height_ratio=None,
+        estimated_hip_to_bbox_height_ratio=None,
+        estimated_shoulder_to_bbox_height_ratio=None,
+        warnings=[],
+    )
+
+    somatotype = estimate_somatotype(
+        sex="male",
+        bmi=None,
+        visual_features=visual_features,
+        body_fat_percent=None,
+    )
+
+    assert somatotype.primary is None
+    assert somatotype.confidence == 0.0
+    assert "pas encore assez fiables" in somatotype.notes

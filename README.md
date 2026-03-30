@@ -64,6 +64,15 @@ Multipart fields:
 - `weight_kg`: optional
 - `user_id`: optional
 
+### `POST /analyze-food`
+
+Multipart fields:
+
+- `images`: one or more JPEG, PNG, or WEBP meal images
+- `user_id`: optional
+- `meal_context`: optional, for example `breakfast`, `lunch`, `dinner`, `snack`
+- `locale`: optional, defaults to `fr-FR`
+
 ## API Analyze Cheat Sheet
 
 Use `multipart/form-data` on `POST /analyze`.
@@ -122,6 +131,12 @@ You can also send `gender` instead of `sex`, but `sex` is the preferred field.
 - `model_version`
 - `analysis_feedback`
 - `coaching_feedback`
+- `analysis_notes`
+- `analysis_blocks`
+- `scan_profile`
+- `scan_profile.confidence_label`
+- `scan_profile.confidence_message`
+- `somatotype`
 - `analyzed_regions_summary`
 
 ### Front-friendly zone summary
@@ -154,9 +169,22 @@ Top-level fields returned by the API now include:
 - `model_version`
 - `analysis_feedback`
 - `coaching_feedback`
+- `analysis_notes`
+- `analysis_blocks`
+- `somatotype`
 
 The response still includes per-image analysis details so the mobile app can inspect partial failures and image quality.
 For the main product UI, prefer the top-level `analyzed_regions_summary`.
+
+For the food flow, the main product UI should now prefer:
+
+- `meal_label`
+- `estimated_health_profile`
+- `analysis_notes`
+- `scan_profile`
+- `meal_feedback`
+- `detected_items`
+- `confidence_score`
 
 ## Installation
 
@@ -193,6 +221,8 @@ Available URLs:
 
 - `http://localhost:8000`
 - `http://localhost:8000/docs`
+- `http://localhost:8000/test-ui`
+- `http://localhost:8000/test-food-ui`
 
 ## Deploy on Render
 
@@ -214,6 +244,7 @@ Important:
 - After deployment, the main URLs are:
   - `/docs`
   - `/test-ui`
+  - `/test-food-ui`
 
 ## Example curl Request
 
@@ -226,6 +257,16 @@ curl -X POST "http://localhost:8000/analyze" \
   -F "height_cm=168" \
   -F "weight_kg=63.5" \
   -F "user_id=user_12345"
+```
+
+## Example curl Request for Food
+
+```bash
+curl -X POST "http://localhost:8000/analyze-food" \
+  -F "images=@./samples/meal.jpg" \
+  -F "user_id=user_12345" \
+  -F "meal_context=lunch" \
+  -F "locale=fr-FR"
 ```
 
 ## Example JSON Response
@@ -245,8 +286,74 @@ curl -X POST "http://localhost:8000/analyze" \
   "confidence_score": 0.71,
   "model_version": "heuristic-bodyfat-v0.3.0",
   "estimated_body_fat_note": "Image-based body fat is an estimate only and must not be treated as a medical measurement.",
-  "analysis_feedback": "Good analysis base. Image quality looks solid overall. Reliable zones: Tete and Hanches. Weak or missing zones: Mollet / jambe gauche. The body fat estimate should still be treated as directional only.",
-  "coaching_feedback": "Good overall composition. Mild abdominal fat retention is still likely. At an illustrative pace of about 0.5 kg per week, you could approach 24% estimated body fat around May 2026.",
+  "analysis_feedback": "La base d'analyse est solide. La qualite des images est globalement bonne. Zones les plus fiables : Tete et Hanches. Zones encore faibles ou partielles : Mollet / jambe gauche. L'estimation du body fat doit rester lue comme une indication, pas comme une mesure medicale.",
+  "coaching_feedback": "La composition generale est bonne, avec encore une legere retention probable autour de la taille. A un rythme illustratif d'environ 0.5 kg par semaine, tu pourrais te rapprocher de 24% de body fat estime autour de mai 2026.",
+  "analysis_notes": {
+    "attention": {
+      "title": "Taille a surveiller",
+      "message": "Le point a surveiller reste surtout la taille, qui parait encore un peu plus chargee que le reste de la silhouette."
+    },
+    "parfait": {
+      "title": "Scan propre et lisible",
+      "message": "Le scan est propre et la lecture du physique est deja assez coherente."
+    },
+    "progression": {
+      "title": "Priorite definition",
+      "message": "Si le rythme reste regulier autour de 0.5 kg par semaine, tu pourrais te rapprocher de 24% de body fat estime autour de mai 2026."
+    }
+  },
+  "analysis_blocks": {
+    "overview": {
+      "title": "Lecture globale",
+      "message": "Le scan est suffisamment propre pour une lecture exploitable. La structure generale parait equilibree, avec une marge surtout visible autour de la taille."
+    },
+    "truth": {
+      "title": "Le constat principal",
+      "message": "Le scan indique surtout que la zone taille reste encore celle qui freine le plus un rendu plus sec."
+    },
+    "strength": {
+      "title": "Point fort du scan",
+      "message": "Le scan est suffisamment clair pour soutenir un retour plus dur et plus utile."
+    },
+    "limitation": {
+      "title": "Frein principal",
+      "message": "La retention autour de la taille reste ce qui freine le plus le rendu global."
+    },
+    "next_focus": {
+      "title": "Priorite physique",
+      "message": "Le levier le plus rentable maintenant reste de continuer a faire descendre la zone qui garde encore le plus de gras residuel."
+    },
+    "scan_quality": {
+      "title": "Niveau de fiabilite",
+      "message": "Le scan est tres fiable: les angles sont bons, la posture est stable et la lecture globale tient bien. La couverture actuelle est front_and_side_available et la posture est evaluee comme neutral."
+    }
+  },
+  "scan_profile": {
+    "reliability_level": "high",
+    "confidence_label": "Tres fiable",
+    "confidence_message": "Le scan est tres fiable: les angles sont bons, la posture est stable et la lecture globale tient bien.",
+    "definition_level": "moderate_to_good",
+    "fat_distribution": "slightly_central",
+    "frame_assessment": "balanced_frame",
+    "view_coverage": "front_and_side_available",
+    "pose_quality": "neutral",
+    "scan_readiness": "ready_for_actionable_feedback",
+    "best_next_focus": "continue_improving_definition",
+    "dominant_strength": "scan_clarity",
+    "dominant_limitation": "central_fat",
+    "summary": "Le scan est suffisamment propre pour une lecture exploitable. Le scan est suffisamment clair pour appuyer un retour plus direct. La structure generale parait equilibree. La definition visuelle parait deja correcte. La marge la plus visible semble legerement centree autour de la taille. La limite principale semble rester une retention plus visible autour de la taille. Le meilleur levier semble etre de continuer a gagner en definition."
+  },
+  "somatotype": {
+    "primary": "mesomorph",
+    "secondary": "endomorph",
+    "confidence": 0.72,
+    "scores": {
+      "ectomorph": 0.31,
+      "mesomorph": 0.78,
+      "endomorph": 0.44
+    },
+    "notes": "Estime a partir des proportions visibles du corps et d'heuristiques liees au body fat uniquement. Il s'agit d'une etiquette approximative et non medicale."
+  },
   "overall_quality_score": 0.79,
   "warnings": [
     "Estimated body fat is derived from demographics and image-based proxies, not direct measurement."
@@ -309,6 +416,97 @@ curl -X POST "http://localhost:8000/analyze" \
   ]
 }
 ```
+
+## Example JSON Response for Food
+
+```json
+  {
+    "user_id": "user_12345",
+    "meal_context": "lunch",
+    "locale": "fr-FR",
+    "images_processed": 1,
+    "food_detected": true,
+    "meal_label": "chicken_rice_bowl",
+    "detected_items": [
+      {
+        "label": "rice",
+        "confidence": 0.82
+      },
+      {
+        "label": "chicken_or_lean_protein",
+        "confidence": 0.78
+      },
+      {
+        "label": "vegetables",
+        "confidence": 0.71
+      }
+    ],
+    "estimated_portion_label": "medium",
+    "estimated_portion_confidence": 0.61,
+    "estimated_calories_kcal": 590,
+    "estimated_protein_g": 38,
+    "estimated_carbs_g": 58,
+    "estimated_fat_g": 18,
+    "estimated_health_profile": "protein_forward",
+    "confidence_score": 0.72,
+    "model_version": "heuristic-food-v0.2.0",
+    "analysis_notes": {
+      "attention": "Attention: la portion reste approximate a partir d'une photo seule.",
+      "parfait": "Parfait: les grandes composantes du repas ont ete reconnues de facon exploitable.",
+      "progression": "Progression: une photo prise de dessus, avec le plat entier bien visible et peu d'arriere-plan, ameliorera l'estimation nutritionnelle."
+    },
+    "meal_feedback": {
+      "attention": "Attention: la sauce, l'huile ou certains accompagnements peuvent encore faire varier les calories reelles.",
+      "parfait": "Parfait: ce repas parait riche en proteines et plutot coherent pour soutenir la satiete.",
+      "progression": "Progression: ajoute encore plus de legumes ou garde une portion stable de glucides pour un repas encore plus regulier."
+    },
+    "warnings": [
+      "Nutrition values are approximate and should not be treated as exact."
+  ],
+  "recommendations": [
+    "Take one clear top-down photo with the whole plate visible."
+  ],
+  "results": [
+    {
+      "filename": "meal.jpg",
+        "content_type": "image/jpeg",
+        "processing_status": "success",
+        "food_detected": true,
+        "confidence_score": 0.74,
+        "quality_score": 0.85,
+        "image_width": 1080,
+        "image_height": 1440,
+        "meal_label": "chicken_rice_bowl",
+        "estimated_health_profile": "protein_forward",
+        "detected_items": [
+          {
+            "label": "rice",
+            "confidence": 0.82
+          },
+          {
+            "label": "chicken_or_lean_protein",
+            "confidence": 0.78
+          }
+        ],
+        "warnings": []
+      }
+    ]
+  }
+```
+
+### Food flow practical fields
+
+For the app, the most useful fields to read first are:
+
+- `meal_label`
+- `estimated_health_profile`
+- `estimated_calories_kcal`
+- `estimated_protein_g`
+- `estimated_carbs_g`
+- `estimated_fat_g`
+- `analysis_notes`
+- `meal_feedback`
+- `confidence_score`
 
 ## Inference Details
 

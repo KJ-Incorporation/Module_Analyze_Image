@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     pose_tracking_confidence: float = Field(default=0.5, ge=0.0, le=1.0)
     metric_visibility_threshold: float = Field(default=0.5, ge=0.0, le=1.0)
     body_fat_model_version: str = "heuristic-bodyfat-v0.3.0"
+    food_model_version: str = "heuristic-food-v0.2.0"
 
     model_config = SettingsConfigDict(
         env_prefix="WEIGHTY_",

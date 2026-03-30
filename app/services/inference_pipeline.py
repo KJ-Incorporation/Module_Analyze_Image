@@ -9,18 +9,24 @@ from fastapi import UploadFile
 from app.core.config import Settings
 from app.schemas.request import AnalyzeRequestMetadata
 from app.schemas.response import (
+    AnalysisBlocksResponse,
+    AnalysisNotesBlockResponse,
+    AnalysisNotesResponse,
     AnalyzeResponse,
     BodyRegionStatusResponse,
     BoundingBoxResponse,
     ImageAnalysisResponse,
     LandmarkResponse,
+    ScanProfileResponse,
+    SomatotypeResponse,
+    SomatotypeScoresResponse,
 )
 from app.services.body_metrics import (
     aggregate_region_summaries,
     derive_body_metrics,
     summarize_analyzed_regions,
 )
-from app.services.bodyfat_estimator import estimate_body_fat, normalize_sex
+from app.services.bodyfat_estimator import estimate_body_fat, estimate_somatotype, normalize_sex
 from app.services.feature_engineering import aggregate_visual_features, build_image_feature_set
 from app.services.image_loader import (
     ImageLoadError,
@@ -35,8 +41,11 @@ from app.services.pose_estimator import (
 from app.services.quality_checks import (
     assess_image_quality,
     build_analysis_feedback,
+    build_analysis_blocks,
+    build_analysis_notes,
     build_coaching_feedback,
     build_recommendations,
+    build_scan_profile,
     calculate_overall_quality_score,
 )
 
@@ -172,6 +181,7 @@ class BodyFatInferencePipeline:
                 bbox=bbox_response,
                 quality_score=quality.quality_score,
                 pose_confidence_score=pose_result.confidence_score,
+                posture_summary=derived_metrics.posture_summary,
             )
             feature_sets.append(feature_set)
             analyzed_regions = summarize_analyzed_regions(
@@ -234,6 +244,12 @@ class BodyFatInferencePipeline:
             visual_features=aggregated_visual_features,
             model_version=self._settings.body_fat_model_version,
         )
+        somatotype = estimate_somatotype(
+            sex=normalized_sex or metadata.resolved_sex,
+            bmi=estimate.bmi,
+            visual_features=aggregated_visual_features,
+            body_fat_percent=estimate.estimated_body_fat_percent,
+        )
         overall_quality_score = calculate_overall_quality_score(quality_scores)
         recommendations = build_recommendations(
             has_successful_detection=has_successful_detection,
@@ -266,6 +282,8 @@ class BodyFatInferencePipeline:
             confidence_score=estimate.confidence_score,
             estimated_body_fat_percent=estimate.estimated_body_fat_percent,
             analyzed_regions_summary=analyzed_regions_summary,
+            sex=normalized_sex or metadata.resolved_sex,
+            visual_features=aggregated_visual_features,
         )
         coaching_feedback = build_coaching_feedback(
             sex=normalized_sex or metadata.resolved_sex,
@@ -274,6 +292,34 @@ class BodyFatInferencePipeline:
             estimated_lean_mass_kg=estimate.estimated_lean_mass_kg,
             weight_kg=metadata.weight_kg,
             visual_features=aggregated_visual_features,
+        )
+        analysis_notes = build_analysis_notes(
+            has_successful_detection=has_successful_detection,
+            overall_quality_score=overall_quality_score,
+            confidence_score=estimate.confidence_score,
+            estimated_body_fat_percent=estimate.estimated_body_fat_percent,
+            estimated_lean_mass_kg=estimate.estimated_lean_mass_kg,
+            weight_kg=metadata.weight_kg,
+            sex=normalized_sex or metadata.resolved_sex,
+            analyzed_regions_summary=analyzed_regions_summary,
+            visual_features=aggregated_visual_features,
+        )
+        scan_profile = build_scan_profile(
+            has_successful_detection=has_successful_detection,
+            confidence_score=estimate.confidence_score,
+            overall_quality_score=overall_quality_score,
+            estimated_body_fat_percent=estimate.estimated_body_fat_percent,
+            analyzed_regions_summary=analyzed_regions_summary,
+            visual_features=aggregated_visual_features,
+            sex=normalized_sex or metadata.resolved_sex,
+        )
+        analysis_blocks = build_analysis_blocks(
+            analysis_notes=analysis_notes,
+            scan_profile=scan_profile,
+            confidence_score=estimate.confidence_score,
+            overall_quality_score=overall_quality_score,
+            estimated_body_fat_percent=estimate.estimated_body_fat_percent,
+            sex=normalized_sex or metadata.resolved_sex,
         )
         return AnalyzeResponse(
             user_id=metadata.user_id,
@@ -293,6 +339,72 @@ class BodyFatInferencePipeline:
             ),
             analysis_feedback=analysis_feedback,
             coaching_feedback=coaching_feedback,
+            analysis_notes=AnalysisNotesBlockResponse(
+                attention=AnalysisNotesResponse(
+                    title=analysis_notes.attention.title,
+                    message=analysis_notes.attention.message,
+                ),
+                parfait=AnalysisNotesResponse(
+                    title=analysis_notes.parfait.title,
+                    message=analysis_notes.parfait.message,
+                ),
+                progression=AnalysisNotesResponse(
+                    title=analysis_notes.progression.title,
+                    message=analysis_notes.progression.message,
+                ),
+            ),
+            analysis_blocks=AnalysisBlocksResponse(
+                overview=AnalysisNotesResponse(
+                    title=analysis_blocks.overview.title,
+                    message=analysis_blocks.overview.message,
+                ),
+                truth=AnalysisNotesResponse(
+                    title=analysis_blocks.truth.title,
+                    message=analysis_blocks.truth.message,
+                ),
+                strength=AnalysisNotesResponse(
+                    title=analysis_blocks.strength.title,
+                    message=analysis_blocks.strength.message,
+                ),
+                limitation=AnalysisNotesResponse(
+                    title=analysis_blocks.limitation.title,
+                    message=analysis_blocks.limitation.message,
+                ),
+                next_focus=AnalysisNotesResponse(
+                    title=analysis_blocks.next_focus.title,
+                    message=analysis_blocks.next_focus.message,
+                ),
+                scan_quality=AnalysisNotesResponse(
+                    title=analysis_blocks.scan_quality.title,
+                    message=analysis_blocks.scan_quality.message,
+                ),
+            ),
+            scan_profile=ScanProfileResponse(
+                reliability_level=scan_profile.reliability_level,
+                confidence_label=scan_profile.confidence_label,
+                confidence_message=scan_profile.confidence_message,
+                definition_level=scan_profile.definition_level,
+                fat_distribution=scan_profile.fat_distribution,
+                frame_assessment=scan_profile.frame_assessment,
+                view_coverage=scan_profile.view_coverage,
+                pose_quality=scan_profile.pose_quality,
+                scan_readiness=scan_profile.scan_readiness,
+                best_next_focus=scan_profile.best_next_focus,
+                dominant_strength=scan_profile.dominant_strength,
+                dominant_limitation=scan_profile.dominant_limitation,
+                summary=scan_profile.summary,
+            ),
+            somatotype=SomatotypeResponse(
+                primary=somatotype.primary,
+                secondary=somatotype.secondary,
+                confidence=somatotype.confidence,
+                scores=SomatotypeScoresResponse(
+                    ectomorph=somatotype.ectomorph_score,
+                    mesomorph=somatotype.mesomorph_score,
+                    endomorph=somatotype.endomorph_score,
+                ),
+                notes=somatotype.notes,
+            ),
             overall_quality_score=overall_quality_score,
             warnings=response_warnings,
             recommendations=recommendations,

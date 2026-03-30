@@ -94,3 +94,28 @@ def test_build_image_feature_set_penalizes_partial_body_coverage() -> None:
 
     assert feature_set.body_coverage_score == 0.35
     assert any("partial" in warning.lower() for warning in feature_set.warnings)
+
+
+def test_aggregate_visual_features_tracks_view_diversity_and_pose_quality() -> None:
+    front = build_image_feature_set(
+        body_metrics=DerivedBodyMetrics(124.0, 104.0, 92.0, 0.885, "upright / balanced", 0.92, []),
+        bbox=BoundingBoxResponse(x_min=0, y_min=0, x_max=220, y_max=480, width=220, height=480),
+        quality_score=0.86,
+        pose_confidence_score=0.9,
+        posture_summary="upright / balanced",
+    )
+    side = build_image_feature_set(
+        body_metrics=DerivedBodyMetrics(82.0, 74.0, 70.0, 0.946, "slight asymmetry", 0.88, []),
+        bbox=BoundingBoxResponse(x_min=0, y_min=0, x_max=150, y_max=470, width=150, height=470),
+        quality_score=0.81,
+        pose_confidence_score=0.86,
+        posture_summary="slight asymmetry",
+    )
+
+    aggregated = aggregate_visual_features([front, side])
+
+    assert aggregated.front_view_count == 1
+    assert aggregated.side_view_count == 1
+    assert aggregated.view_diversity_score == 1.0
+    assert aggregated.pose_neutrality_score is not None
+    assert aggregated.pose_neutrality_score > 0.8

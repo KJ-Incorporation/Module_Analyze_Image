@@ -69,6 +69,13 @@ async def test_ui() -> FileResponse:
     return FileResponse(STATIC_DIR / "index.html")
 
 
+@app.get("/test-food-ui", response_class=FileResponse)
+async def test_food_ui() -> FileResponse:
+    """Serve the lightweight HTML test UI for food analysis."""
+
+    return FileResponse(STATIC_DIR / "food-test-ui.html")
+
+
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """Return JSON for unexpected errors."""

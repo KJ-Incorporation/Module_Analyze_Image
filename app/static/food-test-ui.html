@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weighty Food Test UI</title>
+  <style>
+    :root {
+      --bg: #f5efe7;
+      --bg-accent: #ebdbc2;
+      --surface: rgba(255, 251, 245, 0.9);
+      --surface-strong: #fffaf2;
+      --text: #241f1a;
+      --muted: #655a50;
+      --border: rgba(86, 66, 47, 0.12);
+      --shadow: 0 22px 54px rgba(63, 45, 29, 0.12);
+      --primary: #1e6d5d;
+      --primary-strong: #145045;
+      --secondary: #d3944f;
+      --ready: #58606d;
+      --loading: #8a5a2d;
+      --success: #177345;
+      --error: #b53a30;
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.78), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(211, 148, 79, 0.18), transparent 28%),
+        linear-gradient(135deg, var(--bg) 0%, var(--bg-accent) 100%);
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 30px auto 48px;
+      display: grid;
+      gap: 24px;
+    }
+
+    .hero,
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .hero {
+      padding: 28px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(30, 109, 93, 0.1);
+      color: var(--primary-strong);
+      font-weight: 700;
+      font-size: 0.86rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      max-width: 12ch;
+      line-height: 0.95;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .hero-grid,
+    .content-grid {
+      display: grid;
+      gap: 24px;
+    }
+
+    .hero-grid {
+      grid-template-columns: 2fr 1fr;
+      align-items: end;
+    }
+
+    .hero-card {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px solid rgba(86, 66, 47, 0.08);
+    }
+
+    .content-grid {
+      grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+    }
+
+    .panel {
+      padding: 24px;
+      display: grid;
+      gap: 22px;
+    }
+
+    form {
+      display: grid;
+      gap: 18px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.94rem;
+      font-weight: 700;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      font: inherit;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(86, 66, 47, 0.16);
+      background: rgba(255, 255, 255, 0.82);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(30, 109, 93, 0.45);
+      box-shadow: 0 0 0 4px rgba(30, 109, 93, 0.08);
+      transform: translateY(-1px);
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .file-input {
+      padding: 10px;
+      min-height: 54px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .button {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .button.primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .button.secondary {
+      background: rgba(30, 109, 93, 0.08);
+      color: var(--primary-strong);
+    }
+
+    .button.ghost {
+      background: rgba(101, 90, 80, 0.08);
+      color: var(--text);
+    }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .status-badge::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: 0.9;
+    }
+
+    .status-ready {
+      color: var(--ready);
+      background: rgba(88, 96, 109, 0.1);
+    }
+
+    .status-loading {
+      color: var(--loading);
+      background: rgba(138, 90, 45, 0.12);
+    }
+
+    .status-success {
+      color: var(--success);
+      background: rgba(23, 115, 69, 0.12);
+    }
+
+    .status-error {
+      color: var(--error);
+      background: rgba(181, 58, 48, 0.12);
+    }
+
+    .preview-grid,
+    .summary-grid,
+    .notes-grid,
+    .results-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .preview-grid {
+      grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+    }
+
+    .summary-grid,
+    .notes-grid {
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    }
+
+    .results-grid {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .preview-card,
+    .metric-card,
+    .note-card,
+    .result-card,
+    .response-card,
+    .detected-items-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.66);
+    }
+
+    .preview-card {
+      overflow: hidden;
+    }
+
+    .preview-card img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    .preview-card .caption,
+    .metric-card,
+    .note-card,
+    .result-card,
+    .response-card,
+    .detected-items-card {
+      padding: 14px;
+    }
+
+    .metric-card,
+    .note-card {
+      display: grid;
+      gap: 6px;
+      min-height: 108px;
+    }
+
+    .metric-card .label,
+    .note-card .label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .metric-card .value {
+      font-size: clamp(1.18rem, 2.5vw, 1.8rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .mono {
+      font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(30, 109, 93, 0.1);
+      color: var(--primary-strong);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .item-list,
+    .warning-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+    }
+
+    .response-card pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.55;
+      font-size: 0.92rem;
+    }
+
+    .empty-state {
+      padding: 18px;
+      border: 1px dashed rgba(86, 66, 47, 0.18);
+      border-radius: 18px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.38);
+    }
+
+    @media (max-width: 920px) {
+      .hero-grid,
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 20px, 1180px);
+        margin: 20px auto 28px;
+      }
+
+      .hero,
+      .panel {
+        padding: 18px;
+      }
+
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .actions,
+      .status-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <span class="eyebrow">Weighty Food Test UI</span>
+      <div class="hero-grid">
+        <div>
+          <h1>Tester l'analyse food directement depuis FastAPI.</h1>
+          <p>
+            Cette page envoie des images de repas en <span class="mono">multipart/form-data</span>
+            vers un endpoint relatif du backend. Elle est faite pour tester rapidement
+            le JSON retourne par <span class="mono">POST /analyze-food</span>.
+          </p>
+        </div>
+        <div class="hero-card">
+          <strong>Endpoint cote front</strong>
+          <p class="mono" id="endpointLabel">/analyze-food</p>
+          <p>Le chemin est defini dans le JavaScript et reste facile a modifier si besoin.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <section class="panel">
+        <div>
+          <h2>Formulaire</h2>
+          <p>Les champs vides ne sont pas envoyes. Les images sont ajoutees avec <span class="mono">FormData</span>.</p>
+        </div>
+
+        <form id="foodForm">
+          <div class="field-grid">
+            <div class="field full">
+              <label for="images">Images du repas</label>
+              <input class="file-input" id="images" name="images" type="file" accept="image/*" multiple />
+            </div>
+
+            <div class="field full">
+              <div id="previewGrid" class="preview-grid"></div>
+            </div>
+
+            <div class="field">
+              <label for="user_id">user_id</label>
+              <input id="user_id" name="user_id" type="text" placeholder="user_12345" />
+            </div>
+
+            <div class="field">
+              <label for="locale">locale</label>
+              <input id="locale" name="locale" type="text" placeholder="fr-FR" value="fr-FR" />
+            </div>
+
+            <div class="field full">
+              <label for="meal_context">meal_context</label>
+              <select id="meal_context" name="meal_context">
+                <option value="">Non renseigne</option>
+                <option value="breakfast">breakfast</option>
+                <option value="lunch">lunch</option>
+                <option value="dinner">dinner</option>
+                <option value="snack">snack</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="button primary" id="submitButton" type="submit">Envoyer</button>
+            <button class="button secondary" id="resetButton" type="button">Reset</button>
+            <button class="button ghost" id="copyButton" type="button">Copier la reponse JSON</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="status-row">
+          <div id="statusBadge" class="status-badge status-ready">Pret</div>
+          <div id="statusDetail" class="muted mono">En attente d'une requete.</div>
+        </div>
+
+        <section>
+          <h2>Resume</h2>
+          <div id="summaryGrid" class="summary-grid">
+            <div class="empty-state">Aucune reponse pour le moment.</div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Notes d'analyse</h2>
+          <div id="analysisNotes" class="notes-grid">
+            <div class="empty-state">Les notes du backend s'afficheront ici.</div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Feedback repas</h2>
+          <div id="mealFeedback" class="notes-grid">
+            <div class="empty-state">Le feedback repas du backend s'affichera ici.</div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Items detectes</h2>
+          <div id="detectedItems" class="detected-items-card">
+            <div class="empty-state">Les aliments detectes s'afficheront ici.</div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Resultats par image</h2>
+          <div id="resultsGrid" class="results-grid">
+            <div class="empty-state">Les resultats par image s'afficheront ici.</div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Reponse JSON</h2>
+          <div class="response-card">
+            <pre id="jsonOutput">{"status":"ready"}</pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Notes</h2>
+          <div class="notes-grid">
+            <article class="note-card">
+              <div class="label">Service prevu</div>
+              <p>Cette page est prevue pour etre servie directement par FastAPI via <span class="mono">GET /test-food-ui</span>.</p>
+            </article>
+            <article class="note-card">
+              <div class="label">Format attendu</div>
+              <p>L'endpoint appele doit accepter des requetes <span class="mono">multipart/form-data</span>.</p>
+            </article>
+            <article class="note-card">
+              <div class="label">Modification rapide</div>
+              <p>Pour tester un autre endpoint, modifie la constante JavaScript <span class="mono">ANALYZE_ENDPOINT</span>.</p>
+            </article>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const ANALYZE_ENDPOINT = "/analyze-food";
+
+    const form = document.getElementById("foodForm");
+    const imagesInput = document.getElementById("images");
+    const previewGrid = document.getElementById("previewGrid");
+    const summaryGrid = document.getElementById("summaryGrid");
+    const analysisNotes = document.getElementById("analysisNotes");
+    const mealFeedback = document.getElementById("mealFeedback");
+    const detectedItems = document.getElementById("detectedItems");
+    const resultsGrid = document.getElementById("resultsGrid");
+    const jsonOutput = document.getElementById("jsonOutput");
+    const copyButton = document.getElementById("copyButton");
+    const resetButton = document.getElementById("resetButton");
+    const submitButton = document.getElementById("submitButton");
+    const statusBadge = document.getElementById("statusBadge");
+    const statusDetail = document.getElementById("statusDetail");
+    const endpointLabel = document.getElementById("endpointLabel");
+
+    endpointLabel.textContent = ANALYZE_ENDPOINT;
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function formatValue(value, suffix = "") {
+      if (value === null || value === undefined || value === "") {
+        return "null";
+      }
+      return `${value}${suffix}`;
+    }
+
+    function setStatus(type, label, detail) {
+      statusBadge.className = `status-badge status-${type}`;
+      statusBadge.textContent = label;
+      statusDetail.textContent = detail;
+    }
+
+    function createMetricCard(label, value, helper = "") {
+      return `
+        <article class="metric-card">
+          <div class="label">${escapeHtml(label)}</div>
+          <div class="value">${escapeHtml(formatValue(value))}</div>
+          <div class="muted">${escapeHtml(helper)}</div>
+        </article>
+      `;
+    }
+
+    function renderPreviews(files) {
+      previewGrid.innerHTML = "";
+      if (!files.length) {
+        previewGrid.innerHTML = '<div class="empty-state">Ajoute une ou plusieurs images pour voir un apercu.</div>';
+        return;
+      }
+
+      files.forEach((file) => {
+        const url = URL.createObjectURL(file);
+        const card = document.createElement("article");
+        card.className = "preview-card";
+        card.innerHTML = `
+          <img src="${url}" alt="${escapeHtml(file.name)}" />
+          <div class="caption">
+            <strong>${escapeHtml(file.name)}</strong>
+            <div class="muted">${Math.round(file.size / 1024)} KB</div>
+          </div>
+        `;
+        card.querySelector("img").addEventListener("load", () => URL.revokeObjectURL(url));
+        previewGrid.appendChild(card);
+      });
+    }
+
+    function renderSummary(data) {
+      if (!data || typeof data !== "object") {
+        summaryGrid.innerHTML = '<div class="empty-state">Reponse non exploitable pour le resume.</div>';
+        return;
+      }
+
+      summaryGrid.innerHTML = [
+        createMetricCard("Food detected", data.food_detected, "Detection globale du repas."),
+        createMetricCard("Meal label", data.meal_label, "Etiquette heuristique du plat."),
+        createMetricCard("Health profile", data.estimated_health_profile, "Lecture produit du repas."),
+        createMetricCard("Portion", data.estimated_portion_label, "Estimation de portion."),
+        createMetricCard("Calories kcal", data.estimated_calories_kcal, "Valeur approximative."),
+        createMetricCard("Protein g", data.estimated_protein_g, "Valeur approximative."),
+        createMetricCard("Carbs g", data.estimated_carbs_g, "Valeur approximative."),
+        createMetricCard("Fat g", data.estimated_fat_g, "Valeur approximative."),
+        createMetricCard("Confidence", data.confidence_score, "Score global de confiance."),
+      ].join("");
+    }
+
+    function renderAnalysisNotes(data) {
+      const notes = data?.analysis_notes;
+      if (!notes || typeof notes !== "object") {
+        analysisNotes.innerHTML = '<div class="empty-state">Aucune note d\'analyse retournee.</div>';
+        return;
+      }
+
+      analysisNotes.innerHTML = `
+        <article class="note-card">
+          <div class="label">Attention</div>
+          <p>${escapeHtml(notes.attention || "null")}</p>
+        </article>
+        <article class="note-card">
+          <div class="label">Parfait</div>
+          <p>${escapeHtml(notes.parfait || "null")}</p>
+        </article>
+        <article class="note-card">
+          <div class="label">Progression</div>
+          <p>${escapeHtml(notes.progression || "null")}</p>
+        </article>
+      `;
+    }
+
+    function renderMealFeedback(data) {
+      const notes = data?.meal_feedback;
+      if (!notes || typeof notes !== "object") {
+        mealFeedback.innerHTML = '<div class="empty-state">Aucun feedback repas retourne.</div>';
+        return;
+      }
+
+      mealFeedback.innerHTML = `
+        <article class="note-card">
+          <div class="label">Attention repas</div>
+          <p>${escapeHtml(notes.attention || "null")}</p>
+        </article>
+        <article class="note-card">
+          <div class="label">Parfait repas</div>
+          <p>${escapeHtml(notes.parfait || "null")}</p>
+        </article>
+        <article class="note-card">
+          <div class="label">Progression repas</div>
+          <p>${escapeHtml(notes.progression || "null")}</p>
+        </article>
+      `;
+    }
+
+    function renderDetectedItems(data) {
+      const items = Array.isArray(data?.detected_items) ? data.detected_items : [];
+      const warnings = Array.isArray(data?.warnings) ? data.warnings : [];
+
+      if (!items.length && !warnings.length) {
+        detectedItems.innerHTML = '<div class="empty-state">Aucun item detecte pour le moment.</div>';
+        return;
+      }
+
+      const itemsHtml = items.length
+        ? `<ul class="item-list">${items.map((item) => `<li><strong>${escapeHtml(item.label)}</strong> - confidence ${escapeHtml(formatValue(item.confidence))}</li>`).join("")}</ul>`
+        : '<p class="muted">Aucun aliment principal n\'a ete detecte proprement.</p>';
+
+      const warningsHtml = warnings.length
+        ? `<ul class="warning-list">${warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join("")}</ul>`
+        : '<p class="muted">Aucun warning global.</p>';
+
+      detectedItems.innerHTML = `
+        <div>
+          <h3>Aliments detectes</h3>
+          ${itemsHtml}
+        </div>
+        <div style="margin-top: 14px;">
+          <h3>Warnings</h3>
+          ${warningsHtml}
+        </div>
+      `;
+    }
+
+    function renderResults(data) {
+      const results = Array.isArray(data?.results) ? data.results : [];
+      if (!results.length) {
+        resultsGrid.innerHTML = '<div class="empty-state">Aucun resultat par image retourne.</div>';
+        return;
+      }
+
+      resultsGrid.innerHTML = results.map((result, index) => {
+        const items = Array.isArray(result.detected_items) ? result.detected_items : [];
+        const warnings = Array.isArray(result.warnings) ? result.warnings : [];
+        const itemBlock = items.length
+          ? `<ul class="item-list">${items.map((item) => `<li>${escapeHtml(item.label)} - confidence ${escapeHtml(formatValue(item.confidence))}</li>`).join("")}</ul>`
+          : '<p class="muted">Aucun item image.</p>';
+        const warningBlock = warnings.length
+          ? `<ul class="warning-list">${warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join("")}</ul>`
+          : '<p class="muted">Aucun warning pour cette image.</p>';
+
+        return `
+          <article class="result-card">
+            <div style="display:flex;justify-content:space-between;gap:12px;align-items:start;">
+              <div>
+                <h3>${escapeHtml(result.filename || `image_${index + 1}`)}</h3>
+                <p class="muted">${escapeHtml(result.processing_status || "unknown")}</p>
+              </div>
+              <span class="pill">${result.food_detected ? "food detected" : "no food"}</span>
+            </div>
+            <div style="margin-top: 12px; display:grid; gap:8px;">
+              <p><strong>Meal label:</strong> ${escapeHtml(formatValue(result.meal_label))}</p>
+              <p><strong>Health profile:</strong> ${escapeHtml(formatValue(result.estimated_health_profile))}</p>
+              <p><strong>Confidence:</strong> ${escapeHtml(formatValue(result.confidence_score))}</p>
+              <p><strong>Quality:</strong> ${escapeHtml(formatValue(result.quality_score))}</p>
+              <p><strong>Image size:</strong> ${escapeHtml(formatValue(result.image_width))} x ${escapeHtml(formatValue(result.image_height))}</p>
+              <div>
+                <strong>Detected items:</strong>
+                ${itemBlock}
+              </div>
+              <div>
+                <strong>Warnings:</strong>
+                ${warningBlock}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function buildFormData() {
+      const formData = new FormData();
+      const files = Array.from(imagesInput.files || []);
+      const userId = document.getElementById("user_id").value.trim();
+      const locale = document.getElementById("locale").value.trim();
+      const mealContext = document.getElementById("meal_context").value.trim();
+
+      files.forEach((file) => formData.append("images", file));
+      if (userId) formData.append("user_id", userId);
+      if (locale) formData.append("locale", locale);
+      if (mealContext) formData.append("meal_context", mealContext);
+
+      return formData;
+    }
+
+    async function copyJsonOutput() {
+      const content = jsonOutput.textContent.trim();
+      if (!content) {
+        setStatus("error", "Erreur", "Aucune reponse JSON a copier.");
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(content);
+        setStatus("success", "Succes", "Reponse JSON copiee dans le presse-papiers.");
+      } catch (error) {
+        setStatus("error", "Erreur", "Impossible de copier la reponse JSON.");
+      }
+    }
+
+    function resetUi() {
+      form.reset();
+      document.getElementById("locale").value = "fr-FR";
+      previewGrid.innerHTML = '<div class="empty-state">Ajoute une ou plusieurs images pour voir un apercu.</div>';
+      summaryGrid.innerHTML = '<div class="empty-state">Aucune reponse pour le moment.</div>';
+      analysisNotes.innerHTML = '<div class="empty-state">Les notes du backend s\'afficheront ici.</div>';
+      mealFeedback.innerHTML = '<div class="empty-state">Le feedback repas du backend s\'affichera ici.</div>';
+      detectedItems.innerHTML = '<div class="empty-state">Les aliments detectes s\'afficheront ici.</div>';
+      resultsGrid.innerHTML = '<div class="empty-state">Les resultats par image s\'afficheront ici.</div>';
+      jsonOutput.textContent = '{"status":"ready"}';
+      setStatus("ready", "Pret", "En attente d'une requete.");
+    }
+
+    imagesInput.addEventListener("change", (event) => {
+      renderPreviews(Array.from(event.target.files || []));
+    });
+
+    copyButton.addEventListener("click", copyJsonOutput);
+    resetButton.addEventListener("click", resetUi);
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const files = Array.from(imagesInput.files || []);
+      if (!files.length) {
+        setStatus("error", "Erreur", "Ajoute au moins une image avant l'envoi.");
+        return;
+      }
+
+      submitButton.disabled = true;
+      copyButton.disabled = true;
+      setStatus("loading", "Chargement", "Envoi de la requete food au backend...");
+
+      try {
+        const response = await fetch(ANALYZE_ENDPOINT, {
+          method: "POST",
+          body: buildFormData(),
+        });
+
+        const rawText = await response.text();
+        let data;
+
+        try {
+          data = JSON.parse(rawText);
+        } catch (error) {
+          data = { raw_response: rawText };
+        }
+
+        jsonOutput.textContent = JSON.stringify(data, null, 2);
+        renderSummary(data);
+        renderAnalysisNotes(data);
+        renderMealFeedback(data);
+        renderDetectedItems(data);
+        renderResults(data);
+
+        if (response.ok) {
+          setStatus("success", "Succes", `Reponse recue avec le statut HTTP ${response.status}.`);
+        } else {
+          setStatus("error", "Erreur", `Le backend a repondu avec le statut HTTP ${response.status}.`);
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Erreur reseau inconnue.";
+        const payload = { error: message };
+        jsonOutput.textContent = JSON.stringify(payload, null, 2);
+        renderSummary(payload);
+        renderAnalysisNotes(payload);
+        renderMealFeedback(payload);
+        renderDetectedItems(payload);
+        renderResults(payload);
+        setStatus("error", "Erreur", "La requete a echoue avant de recevoir une reponse.");
+      } finally {
+        submitButton.disabled = false;
+        copyButton.disabled = false;
+      }
+    });
+
+    resetUi();
+  </script>
+</body>
+</html>
